@@ -25,6 +25,7 @@ class Sniffer{
 		Sniffer(int listMax);
 		~Sniffer();
 		void startSniffer();
+		void changeListChannel();
 
 	private:
 		void insertMacList(wifi_ieee80211_mac_hdr_t *mac);
@@ -32,6 +33,7 @@ class Sniffer{
 		static void handleSniffer(void* buff, wifi_promiscuous_pkt_type_t type);
 		int maxMACList = 100;
 		uint8_t **macList = nullptr;
+		int actualChannel = 0;
 		int macListIndex = 0;
 
 };

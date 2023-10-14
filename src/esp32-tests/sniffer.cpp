@@ -4,6 +4,7 @@
 #include <cstdlib>
 
 #define MAC_COLUMNS 6
+#define MAX_CHANNEL 13
 
 Sniffer sniffer;
 
@@ -32,6 +33,10 @@ void Sniffer::startSniffer() {
   esp_wifi_set_promiscuous(true);
   //esp_wifi_set_promiscuous_filter(&filt);
   esp_wifi_set_promiscuous_rx_cb(&this->handleSniffer);
+}
+
+void Sniffer::changeListChannel() {
+  esp_wifi_set_channel((this->actualChannel < MAX_CHANNEL) ? this->actualChannel++ : this->actualChannel = 1, WIFI_SECOND_CHAN_NONE);
 }
 
 void Sniffer::handleSniffer(void* buff, wifi_promiscuous_pkt_type_t type) {
