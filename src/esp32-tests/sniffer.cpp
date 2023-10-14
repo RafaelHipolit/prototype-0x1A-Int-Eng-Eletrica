@@ -39,6 +39,10 @@ void Sniffer::changeListChannel() {
   esp_wifi_set_channel((this->actualChannel < MAX_CHANNEL) ? this->actualChannel++ : this->actualChannel = 1, WIFI_SECOND_CHAN_NONE);
 }
 
+uint8_t **Sniffer::getMacList() {
+	return this->macList;
+}
+
 void Sniffer::handleSniffer(void* buff, wifi_promiscuous_pkt_type_t type) {
 	if (type != WIFI_PKT_MGMT)
     return;

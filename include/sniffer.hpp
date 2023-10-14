@@ -25,6 +25,7 @@ class Sniffer{
 		Sniffer(int listMax);
 		~Sniffer();
 		void startSniffer();
+		uint8_t **getMacList();
 		void changeListChannel();
 
 	private:
