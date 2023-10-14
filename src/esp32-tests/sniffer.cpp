@@ -35,6 +35,13 @@ void Sniffer::startSniffer() {
   esp_wifi_set_promiscuous_rx_cb(&this->handleSniffer);
 }
 
+void Sniffer::resetList() {
+	for (int i = 0; i < this->macListIndex; i++) {
+		delete [] this->macList[i];
+	}
+	this->macListIndex = 0;
+}
+
 void Sniffer::changeListChannel() {
   esp_wifi_set_channel((this->actualChannel < MAX_CHANNEL) ? this->actualChannel++ : this->actualChannel = 1, WIFI_SECOND_CHAN_NONE);
 }
