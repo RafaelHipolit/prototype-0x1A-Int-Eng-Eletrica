@@ -11,8 +11,11 @@ class Sniffer{
 		~Sniffer();
 
 	private:
+		void insertMacList(wifi_ieee80211_mac_hdr_t *mac);
+		bool isInList(uint8_t *mac);
 		int maxMACList = 100;
 		uint8_t **macList = nullptr;
+		int macListIndex = 0;
 
 };
 
