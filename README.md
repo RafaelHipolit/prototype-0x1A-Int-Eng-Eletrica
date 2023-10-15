@@ -18,6 +18,13 @@ Simples, ele é mil vezes melhor do que o ArduinoIDE, porém ele é mais avancad
 Apenas facam upload do código `src/esp32-testes/main.cpp` para o esp32 pelo platformIO  
 Para ver os dados na serial, coloquem o `monitor_speed` em 115200  
 
+# To-Do
+
+- [x] Add basic sniffer
+- [ ] Method for disable promiscuous mode
+- [ ] Make scan three times for more precision
+- [ ] ...
+
 # LICENSE
 
 **MIT**  
