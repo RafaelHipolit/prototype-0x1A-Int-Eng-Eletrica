@@ -91,7 +91,7 @@ void Sniffer::printMacList() {
 	Serial.printf("Found %02d MAC address\n", this->macListIndex);
 	for (int i = 0; i < this->macListIndex; i++) {
 		printf("MAC(%02d) -> %02x:%02x:%02x:%02x:%02x:%02x\n", i,
-				this->macList[i][0],this->macList[i][2],this->macList[i][2],
+				this->macList[i][0],this->macList[i][1],this->macList[i][2],
 				this->macList[i][3],this->macList[i][4],this->macList[i][5]);
 	}
 	Serial.print("END\n");
