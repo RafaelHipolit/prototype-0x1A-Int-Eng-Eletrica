@@ -12,6 +12,7 @@ void setup() {
 void loop() {
 	for (int i = 0; i < 13; i++) {
 		sniffer.changeListChannel();
+		Serial.printf("Mudou para o canal = %d\n", sniffer.getActualChannel());
 		delay(500);
 	}
 	delay(5000);

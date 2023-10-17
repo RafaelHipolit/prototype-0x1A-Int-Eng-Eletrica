@@ -29,6 +29,7 @@ class Sniffer{
 		void changeListChannel();
 		void resetList();
 		void printMacList();
+		int getActualChannel();
 
 	private:
 		void insertMacList(wifi_ieee80211_mac_hdr_t *mac);
