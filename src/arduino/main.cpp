@@ -23,6 +23,8 @@
 
 #define PIN_H_BRIDGE_DIRECTION_ROTATION 5 //pino conectado a ponte h para determinar seu sentido de rotacao 
 
+#define PIN_BUTTON_POWER 3
+
 // distancia maxima que os sensores ultrasonicos detectam algo
 #define DIST_MAX_DETECTAR 20
 
@@ -36,11 +38,13 @@ float dist1 = 0, dist2 = 0;
 bool detectou1 = false, detectou2 = false;
 int quantPessoas = 0;
 bool alguemSaiu = false;
+bool powerOn = true;
 
 
 // declaracao das funcoes:
 float readUltrasonicDistanceCm(int triggerPin, int echoPin);
 void calcPercentVoltage();
+void apertou();
 
 
 // implementacao das funcoes:
@@ -53,7 +57,7 @@ float readUltrasonicDistanceCm(int triggerPin, int echoPin)
 	return ultrasonic.convert(microsec, Ultrasonic::CM);
 }
 
-// funcao de calcula e retorna a porcentagem de tensao de acordo com quantidade de pessoas
+// funcao de calcula e modifica a variavel percentVoltage de acordo com quantidade de pessoas
 void calcPercentVoltage()
 {
 	if (quantPessoas > MAX_QUANT_PEOPLE)
@@ -68,10 +72,27 @@ void calcPercentVoltage()
 	{
 		percentVoltage = ((float)(quantPessoas - MIN_QUANT_PEOPLE) / (MAX_QUANT_PEOPLE - MIN_QUANT_PEOPLE)) * 100;
 	}
-	Serial.print("percentVoltage = ");
-	Serial.println(percentVoltage);
+	//Serial.print("percentVoltage = ");
+	//Serial.println(percentVoltage);
 }
 
+//
+void apertou(){
+	if (powerOn)
+	{
+		powerOn = false;
+		digitalWrite(PIN_LED_1, LOW);
+		digitalWrite(PIN_LED_2, LOW);
+		analogWrite(PIN_PWM, 0);
+		percentVoltage = 0;
+		quantPessoas = 0;
+	}else
+	{
+		powerOn = true;
+	}
+	
+	
+}
 
 
 
@@ -89,6 +110,10 @@ void setup()
 	pinMode(PIN_PWM, OUTPUT);
 	analogWrite(PIN_PWM, 0);
 
+	//
+	pinMode(PIN_BUTTON_POWER, INPUT);
+	attachInterrupt(digitalPinToInterrupt(PIN_BUTTON_POWER), apertou, RISING);
+
 	Serial.begin(9600);
 }
 
@@ -102,73 +127,85 @@ void loop()
 	//entao o que o sensor estava detectando sumiu
 	//portanto eu aumento ou diminuo a quant de pessoas e coloco false em detectou
 
-	dist1 = readUltrasonicDistanceCm(PIN_TRIG_1, PIN_ECHO_1);
-	if (dist1 < DIST_MAX_DETECTAR)
-	{
-		if (!detectou1)
+	if (powerOn){
+
+		dist1 = readUltrasonicDistanceCm(PIN_TRIG_1, PIN_ECHO_1);
+		if (dist1 < DIST_MAX_DETECTAR)
 		{
-			Serial.print("Sensor 1 detectou algo - Distancia(cm) = ");
-			Serial.println(dist1);
-			digitalWrite(PIN_LED_1, HIGH);
+			if (!detectou1)
+			{
+				//Serial.print("Sensor 1 detectou algo - Distancia(cm) = ");
+				//Serial.println(dist1);
+				digitalWrite(PIN_LED_1, HIGH);
+			}
+			detectou1 = true;
 		}
-		detectou1 = true;
-	}
 
-	dist2 = readUltrasonicDistanceCm(PIN_TRIG_2, PIN_ECHO_2);
-	if (dist2 < DIST_MAX_DETECTAR)
-	{
-		if (!detectou2)
+		dist2 = readUltrasonicDistanceCm(PIN_TRIG_2, PIN_ECHO_2);
+		if (dist2 < DIST_MAX_DETECTAR)
 		{
-			Serial.print("Sensor 2 detectou algo - Distancia(cm) = ");
-			Serial.println(dist2);
-			digitalWrite(PIN_LED_2, HIGH);
+			if (!detectou2)
+			{
+				//Serial.print("Sensor 2 detectou algo - Distancia(cm) = ");
+				//Serial.println(dist2);
+				digitalWrite(PIN_LED_2, HIGH);
+			}
+			detectou2 = true;
 		}
-		detectou2 = true;
-	}
 
-	if (detectou1 && dist1 >= DIST_MAX_DETECTAR)
-	{
-		detectou1 = false;
-		Serial.println("O que o sensor 1 detectou sumiu");
-		quantPessoas++;
-		alguemSaiu = false;
-		Serial.print("Quantidade de pessoas = ");
-		Serial.println(quantPessoas);
-		calcPercentVoltage();
-		digitalWrite(PIN_LED_1, LOW);
-	}
-
-	if (detectou2 && dist2 >= DIST_MAX_DETECTAR)
-	{
-		detectou2 = false;
-		Serial.println("O que o sensor 2 detectou sumiu");
-		if (quantPessoas != 0)
+		if (detectou1 && dist1 >= DIST_MAX_DETECTAR)
 		{
-			quantPessoas--;
-			alguemSaiu = true;
+			detectou1 = false;
+			//Serial.println("O que o sensor 1 detectou sumiu");
+			quantPessoas++;
+			alguemSaiu = false;
+			//Serial.print("Quantidade de pessoas = ");
+			//Serial.println(quantPessoas);
+			calcPercentVoltage();
+			digitalWrite(PIN_LED_1, LOW);
 		}
-		Serial.print("Quantidade de pessoas = ");
-		Serial.println(quantPessoas);
-		calcPercentVoltage();
-		digitalWrite(PIN_LED_2, LOW);
-	}
 
-	//aplico a tensao calculada no pino do PWM
-	if (percentVoltage >= 40)
-	{	
-		//para ativar os pinos de PWM deve-se usa a funcao analogWrite que recebe o numero do pino e a quantidade de tensao por um valor entre 0 e 255
-		//aqui pego o valor da porcentagem entre 0 e 100, divido por 100 pra ficar um valor entre 0 e 1, e depois multiplico por 255
-		analogWrite(PIN_PWM, (int)(255.0 * (percentVoltage / 100.0)));
-	}
-	if (percentVoltage < 40 && alguemSaiu)
-	{
-		analogWrite(PIN_PWM, (int)(255.0 * (percentVoltage / 100.0)));
-	}
+		if (detectou2 && dist2 >= DIST_MAX_DETECTAR)
+		{
+			detectou2 = false;
+			//Serial.println("O que o sensor 2 detectou sumiu");
+			if (quantPessoas != 0)
+			{
+				quantPessoas--;
+				alguemSaiu = true;
+			}
+			//Serial.print("Quantidade de pessoas = ");
+			//Serial.println(quantPessoas);
+			calcPercentVoltage();
+			digitalWrite(PIN_LED_2, LOW);
+		}
 
-	delay(100);
+		//aplico a tensao calculada no pino do PWM
+		if (percentVoltage >= 40)
+		{	
+			//para ativar os pinos de PWM deve-se usa a funcao analogWrite que recebe o numero do pino e a quantidade de tensao por um valor entre 0 e 255
+			//aqui pego o valor da porcentagem entre 0 e 100, divido por 100 pra ficar um valor entre 0 e 1, e depois multiplico por 255
+			analogWrite(PIN_PWM, (int)(255.0 * (percentVoltage / 100.0)));
+		}
+		if (percentVoltage < 40 && alguemSaiu)
+		{
+			analogWrite(PIN_PWM, (int)(255.0 * (percentVoltage / 100.0)));
+		}
+
+		Serial.print("l");
+        Serial.print(quantPessoas);
+      	Serial.print("#");
+      	Serial.print((int)percentVoltage);
+      	Serial.print("#");
+		
+	}else{
+      	Serial.print("d");
+    }
+
+	delay(500);
 }
 
-
+//conecta no pino TX pra dar output de serial
 
 
 
