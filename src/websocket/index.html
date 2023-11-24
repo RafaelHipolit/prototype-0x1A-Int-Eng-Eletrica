@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Web Socket</title>
+</head>
+<body>
+
+    <h2 id="num">oi</h2>
+    
+    <script>    
+    var socket = new WebSocket("ws://192.168.1.11:81");
+
+    socket.onmessage = function(event) {
+        console.log(event.data);
+        document.getElementById("num").innerHTML = event.data;
+    };
+    
+    </script>
+</body>
+</html>
