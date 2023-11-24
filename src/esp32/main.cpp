@@ -1,13 +1,13 @@
 #include <Arduino.h>
 
-#define RXp2 16
-#define TXp2 17
+//#define RXp2 16
+//#define TXp2 17
 
 //conecta no pino RX pra receber input de Serial2
 
 #include <LiquidCrystal.h> //Inclusão da Biblioteca
 // Create An LCD Object. Signals: 
-//              [ RS, EN, D4, D5, D6, D7 ]
+//              [ RS, E, D4, D5, D6, D7 ]
 LiquidCrystal lcd(13, 12, 14, 27, 26, 25);
 //Fonte: https://deepbluembedded.com/esp32-lcd-display-16x2-without-i2c-arduino/
 
@@ -30,16 +30,21 @@ void setup()
 
 	Serial.begin(115200);
 
-	Serial2.begin(9600, SERIAL_8N1, RXp2, TXp2);
+	//Serial2.begin(9600, SERIAL_8N1, RXp2, TXp2);
+	Serial2.begin(9600);
 }
 
 void loop()
 {
+	
 	int i = 0;
 	int j = 0;
 
 	charRead = Serial2.read();
-	Serial.println(charRead);
+	Serial.print("char = ");
+	Serial.print(charRead);
+	Serial.print(" = ");
+	Serial.println((int)charRead);
 	if (charRead == 'l')
 	{
 		lcd.clear();
