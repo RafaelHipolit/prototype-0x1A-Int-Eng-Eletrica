@@ -4,18 +4,180 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Web Socket</title>
+    <style>
+        @charset "UTF-8";
+
+        /* FONTE ROBOTO MONO */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+        /* FONTE ROBOTO */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+        :root {
+            --robotoMonoFont: 'Roboto Mono', monospace, sans-serif;
+            --robotoFont: 'Roboto', monospace, sans-serif;
+        }
+
+        body{
+            font-family: var(--robotoFont);
+            margin: 0px;
+            padding: 0px;
+        }
+        h1{
+            margin: 0px;
+        }
+
+        #backHeader{
+            background-color: darkslateblue;
+        }
+        header {
+            max-width: 70%;
+            height: 70px;
+            padding: 10px;
+            margin: 0px auto;
+            color: white;
+            font-size: 25px;
+        }
+
+
+        main{
+            max-width: 70%;   
+            min-height: 720px;        
+            margin: 0px auto;
+            padding: 10px;
+            font-size: 20px;
+
+        }
+        #info{
+            display: block;
+        }
+        #btn-con{
+            font-family: var(--robotoMonoFont);
+            margin: 10px;
+        }
+        #lotacao{
+            width: 240px;
+            
+            text-align: center;
+            padding: 5px;
+            background-color: red;
+            border-radius: 5px;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(0.99);
+                background-color: red;
+            }
+
+            50% {
+                transform: scale(1);
+                background-color: rgb(238, 4, 4);
+            }
+
+            100% {
+                transform: scale(0.99);
+                background-color: red;
+            }
+        }
+
+        footer{
+            height: 100px;
+            margin: 0px auto;
+            padding: 10px;
+            text-align: center;
+            background-color: darkgray;
+        }
+
+        /*SMARTPHONE*/
+    @media screen and (max-width: 460px) {
+        header{
+            max-width: 100%;
+            margin: 0px;
+            text-align: center;
+        }
+
+        main{
+            max-width: 100%;
+            margin: 0px;
+            min-height: 650px;
+        }
+        #lotacao{
+            margin: 0px auto;
+        }
+
+    }
+
+
+    </style>
 </head>
 <body>
-
-    <h2 id="num">oi</h2>
+    <div id="backHeader">
+        <header>
+            <h1>Protótipo_0x1a</h1>
+        </header>
+    </div>
+    <div id="backMain">
+        <main>
+            <div id="form-con">
+                <label id="label-ipv4" for="ipv4">ipv4:</label>
+                <input id="input-ipv4" type="text" name="ipv4" autofocus maxlength="15" placeholder="Digite ipv4 do localhost">
+                <input id="btn-con" type="submit" value="Conectar">
+            </div>
+            <p id="status-con">DESCONECTADO</p>
+            <div id="info">
+                <p id="lotacao">Lotação em tempo real</p>
+                <p id="quant">Quantidade de passageiros: <span id="numPassageiros">XX</span> </p>
+            </div>
+        </main>
+    </div>
     
-    <script>    
-    var socket = new WebSocket("ws://192.168.1.11:81");
+    <footer>
+        <p>Projeto do trabalho de Introdução à Engenharia Eletrica</p>
+        <p>Grupo 26 - 2023</p>
+    </footer>
 
-    socket.onmessage = function(event) {
-        console.log(event.data);
-        document.getElementById("num").innerHTML = event.data;
-    };
+    
+    <script>
+    var btnCon = document.getElementById("btn-con");
+    var inputIP = document.getElementById("input-ipv4");
+    var numPassageiros = document.getElementById("numPassageiros");
+    var statusCon = document.getElementById("status-con");
+    var formCon = document.getElementById("form-con");
+    var divInfo = document.getElementById("info");
+
+    var conectado = false;
+
+    btnCon.addEventListener("click", con);
+    function con() {
+        if (!conectado) {
+            var socket = new WebSocket("ws://" + inputIP.value + ":8080");
+        }
+        
+
+        socket.onopen = function(event) {
+            statusCon.innerHTML = "CONECTADO";
+            formCon.style.display = "none";
+            divInfo.style.display = "block";
+            conectado= true;        
+        };
+
+        socket.onmessage = function(event) {
+            console.log(event.data);
+            numPassageiros.innerHTML = event.data;
+            
+        };
+
+        socket.onerror = function(event) {
+            statusCon.innerHTML = "NÃO FOI POSSÍVEL CONECTAR-SE AO SERVIDOR"           
+        };
+
+    }
+    
+    
+
+    
     
     </script>
 </body>

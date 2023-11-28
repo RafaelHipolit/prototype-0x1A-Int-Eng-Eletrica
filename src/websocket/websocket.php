@@ -1,14 +1,16 @@
 <?php
-
+//fonte: https://www.youtube.com/watch?v=eFhOlZTFyr4
 require 'vendor/autoload.php';
 
 use Ratchet\MessageComponentInterface;
-use Ratchet\ComponentInterface;
 use Ratchet\ConnectionInterface;
+use Ratchet\Server\IoServer;
+use Ratchet\Http\HttpServer;
+use Ratchet\WebSocket\WsServer;
 
-define("IP_ADDRESS", "192.168.1.11");
+define("IP_ADDRESS", "192.168.1.12");
 
-class myWebSocket implements MessageComponentInterface {
+class MyWebSocketServer implements MessageComponentInterface {
     public $clients;
     private $connectedClients;
 
@@ -47,8 +49,22 @@ class myWebSocket implements MessageComponentInterface {
     }
 }
 
+/*
 $app = new Ratchet\App(IP_ADDRESS, 81, "0.0.0.0"); //ip address, port,?
 $app->route('/', new myWebSocket, array('*')); // ws://[ip address]:[port]/
 $app->run();
+*/
+
+$server = IoServer::factory(
+    new HttpServer(
+        new WsServer(
+            new MyWebSocketServer()
+        )
+    ),
+    8080
+);
+
+$server->run();
+
 
 ?>
